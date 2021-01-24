@@ -1,0 +1,9 @@
+#! /bin/sh
+set -euvx
+perf record \
+  -e br_inst_retired.all_branches \
+  -b                              \
+  -o /var/cpuminer                \
+  --                              \
+  /usr/local/bin/support
+
