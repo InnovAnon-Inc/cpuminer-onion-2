@@ -1,9 +1,10 @@
 FROM innovanon/fdo-cpuminer-onion as bootstrap
 
 FROM bootstrap as profiler
-#SHELL ["/bin/sh"]
+SHELL ["/bin/sh"]
 #RUN ln -sfv /usr/local/bin/cpuminer /usr/local/bin/support
 COPY ./support  /usr/local/bin/
+RUN ls -ltra /var/cpuminer
 SHELL ["/usr/bin/bash", "-l", "-c"]
 ARG TEST
 ENV TEST=$TEST
