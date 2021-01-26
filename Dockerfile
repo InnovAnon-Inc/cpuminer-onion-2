@@ -124,8 +124,15 @@ RUN sleep 91                                 \
  && make -j$(nproc)                          \
  && make install                             \
  && cd ..                                    \
- && rm -rf                       jansson     \
- && cd                           openssl              \
+ && rm -rf                       jansson
+ENV CC=
+ENV CXX=
+ENV FC=
+ENV NM=
+ENV AR=
+ENV RANLIB=
+ENV STRIP=
+RUN cd                           openssl              \
  && ./Configure --prefix=$PREFIX                      \
 	no-rmd160 no-sctp no-dso no-ssl2              \
 	no-ssl3 no-comp no-idea no-dtls               \
@@ -160,8 +167,15 @@ RUN sleep 91                                 \
  && make -j$(nproc)                                   \
  && make install                                      \
  && cd ..                                             \
- && rm -rf                       openssl              \
- && cd                        curl                    \
+ && rm -rf                       openssl
+ENV CC=$CHOST-gcc
+ENV CXX=$CHOST-g++
+ENV FC=$CHOST-gfortran
+ENV NM=$CC-nm
+ENV AR=$CC-ar
+ENV RANLIB=$CC-ranlib
+ENV STRIP=$CHOST-strip
+RUN cd                        curl                    \
  && autoreconf -fi                                    \
  && ./configure --prefix=$PREFIX                      \
         --target=$CHOST           \
