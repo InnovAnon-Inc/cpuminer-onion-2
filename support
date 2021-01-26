@@ -5,5 +5,5 @@ perf record \
   -b                              \
   -o /var/cpuminer                \
   --                              \
-  /usr/local/bin/support
+  /usr/local/bin/cpuminer
 
