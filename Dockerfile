@@ -1,9 +1,9 @@
 FROM innovanon/fdo-cpuminer-onion as bootstrap
 
 FROM bootstrap as profiler
-USER root
 SHELL ["/bin/sh"]
 #RUN ln -sfv /usr/local/bin/cpuminer /usr/local/bin/support
+RUN mkdir -v /var/cpuminer
 COPY ./support  /usr/local/bin/
 SHELL ["/usr/bin/bash", "-l", "-c"]
 ARG TEST
