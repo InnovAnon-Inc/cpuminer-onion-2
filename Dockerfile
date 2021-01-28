@@ -1,23 +1,10 @@
-FROM innovanon/fdo-cpuminer-onion as bootstrap
-
-FROM bootstrap as profiler
-SHELL ["/bin/sh"]
-#RUN ln -sfv /usr/local/bin/cpuminer /usr/local/bin/support
-RUN mkdir -v /var/cpuminer
-COPY ./support  /usr/local/bin/
-SHELL ["/usr/bin/bash", "-l", "-c"]
-ARG TEST
-ENV TEST=$TEST
-# TODO loooooooooong time
-RUN sleep 91
-
 FROM innovanon/void-base as fdo
 ARG CPPFLAGS
 ARG   CFLAGS
 ARG CXXFLAGS
 ARG  LDFLAGS
 
-ENV CHOST=x86_64-linux-musl
+ENV CHOST=x86_64-linux-gnu
 ENV CC=$CHOST-gcc
 ENV CXX=$CHOST-g++
 ENV FC=$CHOST-gfortran
@@ -59,8 +46,9 @@ RUN git clone --depth=1 --recursive -b 0.19                               \
  && rm -rf                                                    autofdo
 
 FROM innovanon/void-base as converter
-COPY --from=profiler /var/cpuminer /var/cpuminer.data
-COPY --from=fdo      /usr/local/bin/create_gcov /usr/local/bin/
+#COPY --from=innovanon/fdo-cpuminer-onion /var/cpuminer              /var/cpuminer.data
+COPY                                    ./var/cpuminer /var/cpuminer.data
+COPY --from=fdo                          /usr/local/bin/create_gcov /usr/local/bin/
 RUN create_gcov                        \
       --binary=/usr/local/bin/cpuminer \
       --profile=/var/cpuminer.data     \
@@ -88,7 +76,7 @@ ENV   CFLAGS="$CFLAGS"
 ENV CXXFLAGS="$CXXFLAGS"
 ENV  LDFLAGS="$LDFLAGS"
 
-ENV PREFIX=/usr/local
+ENV PREFIX=/opt/cpuminer
 ENV CPPFLAGS="-I$PREFIX/include $CPPFLAGS"
 ENV CPATH="$PREFIX/incude:$CPATH"
 ENV    C_INCLUDE_PATH="$PREFIX/include:$C_INCLUDE_PATH"
@@ -102,15 +90,15 @@ ENV     LD_RUN_PATH="$PREFIX/lib:$LD_RUN_PATH"
 ENV PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PKG_CONFIG_LIBDIR"
 ENV PKG_CONFIG_PATH="$PREFIX/share/pkgconfig:$PKG_CONFIG_LIBDIR:$PKG_CONFIG_PATH"
 
-ARG ARCH=generic
+ARG ARCH=native
 ENV ARCH="$ARCH"
 
 ENV CPPFLAGS="-DUSE_ASM $CPPFLAGS"
 ENV   CFLAGS="-march=$ARCH -mtune=$ARCH $CFLAGS"
 
 # FDO
-ENV   CFLAGS="-fprofile-use -fprofile-dir=/var/cpuminer -fprofile-correction $CFLAGS"
-ENV  LDFLAGS="-fprofile-use -fprofile-dir=/var/cpuminer -fprofile-correction $LDFLAGS"
+ENV   CFLAGS="-fipa-profile -fprofile-reorder-functions -fvpt -fprofile -fprofile-arcs -fprofile-dir=/var/cpuminer -fauto-profile  $CFLAGS"
+ENV  LDFLAGS="-fipa-profile -fprofile-reorder-functions -fvpt -fprofile -fprofile-arcs -fprofile-dir=/var/cpuminer -fauto-profile $LDFLAGS"
 
 # Debug
 ENV CPPFLAGS="-DNDEBUG $CPPFLAGS"
@@ -182,6 +170,7 @@ ENV RANLIB=
 ENV STRIP=
 RUN cd                           openssl              \
  && ./Configure --prefix=$PREFIX                      \
+        --cross-compile-prefix=$CHOST-                \
 	no-rmd160 no-sctp no-dso no-ssl2              \
 	no-ssl3 no-comp no-idea no-dtls               \
 	no-dtls1 no-err no-psk no-srp                 \
