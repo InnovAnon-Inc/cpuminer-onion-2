@@ -1,4 +1,4 @@
-FROM innovanon/void-base as fdo
+FROM innovanon/void-base-pgo as fdo
 ARG CPPFLAGS
 ARG   CFLAGS
 ARG CXXFLAGS
