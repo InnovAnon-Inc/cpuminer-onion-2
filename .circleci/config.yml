@@ -35,9 +35,9 @@ jobs:
       - run:
           name: FDO
           command: |
-            rm -rf        ./var/cpuminer
-            mkdir -pv     ./var/cpuminer
-            docker run -v ./var/cpuminer/:/var/cpuminer/:rw innovanon/fdo-cpuminer-onion
+            rm -rf             var/cpuminer
+            mkdir -pv          var/cpuminer
+            docker run -v $PWD/var/cpuminer/:/var/cpuminer/:rw innovanon/fdo-cpuminer-onion
       - run:
           name: Build application Docker image
           command: |
