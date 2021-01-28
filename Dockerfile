@@ -40,6 +40,8 @@ RUN sleep 91                                                              \
  && autoheader                                                            \
  && autoconf                                                              \
  && automake --add-missing -c                                             \
+ && echo good
+RUN echo next \
  && ./configure --host=$CHOST --target=$CHOST                             \
  && make -j1                                                              \
  && make install                                                          \
