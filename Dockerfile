@@ -32,7 +32,8 @@ ENV     LD_RUN_PATH="$PREFIX/lib:$LD_RUN_PATH"
 ENV PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PKG_CONFIG_LIBDIR"
 ENV PKG_CONFIG_PATH="$PREFIX/share/pkgconfig:$PKG_CONFIG_LIBDIR:$PKG_CONFIG_PATH"
 
-RUN git clone --depth=1 --recursive -b 0.19                               \
+RUN sleep 91                                                              \
+ && git clone --depth=1 --recursive -b 0.19                               \
                                     https://github.com/google/autofdo.git \
  && cd                                                        autofdo     \
  && aclocal -I .                                                          \
