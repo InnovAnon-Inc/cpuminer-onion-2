@@ -1,4 +1,5 @@
-FROM innovanon/void-base-pgo as fdo
+#FROM innovanon/void-base-pgo as fdo
+FROM innovanon/doom-base as fdo
 #ARG CPPFLAGS
 #ARG   CFLAGS
 #ARG CXXFLAGS
@@ -34,9 +35,11 @@ FROM innovanon/void-base-pgo as fdo
 #ENV PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PKG_CONFIG_LIBDIR"
 #ENV PKG_CONFIG_PATH="$PREFIX/share/pkgconfig:$PKG_CONFIG_LIBDIR:$PKG_CONFIG_PATH"
 
+ #&& xbps-install -Suy                                                     \
+ #&& xbps-install   -y libressl-devel                                      \
 RUN sleep 91                                                              \
- && xbps-install -Suy                                                     \
- && xbps-install   -y libressl-devel                                      \
+ && apt update \
+ && apt install -y openssl-dev \
  && git clone --depth=1 --recursive -b 0.19                               \
                                     https://github.com/google/autofdo.git \
  && cd                                                        autofdo     \
