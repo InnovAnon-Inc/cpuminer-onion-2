@@ -1,38 +1,42 @@
 FROM innovanon/void-base-pgo as fdo
-ARG CPPFLAGS
-ARG   CFLAGS
-ARG CXXFLAGS
-ARG  LDFLAGS
-
-ENV CHOST=x86_64-linux-gnu
-ENV CC=$CHOST-gcc
-ENV CXX=$CHOST-g++
-ENV FC=$CHOST-gfortran
-ENV NM=$CC-nm
-ENV AR=$CC-ar
-ENV RANLIB=$CC-ranlib
-ENV STRIP=$CHOST-strip
-
-ENV CPPFLAGS="$CPPFLAGS"
-ENV   CFLAGS="$CFLAGS"
-ENV CXXFLAGS="$CXXFLAGS"
-ENV  LDFLAGS="$LDFLAGS"
-
-ENV PREFIX=/usr/local
-ENV CPPFLAGS="-I$PREFIX/include $CPPFLAGS"
-ENV CPATH="$PREFIX/incude:$CPATH"
-ENV    C_INCLUDE_PATH="$PREFIX/include:$C_INCLUDE_PATH"
-ENV OBJC_INCLUDE_PATH="$PREFIX/include:$OBJC_INCLUDE_PATH"
-
-ENV LDFLAGS="-L$PREFIX/lib $LDFLAGS"
-ENV    LIBRARY_PATH="$PREFIX/lib:$LIBRARY_PATH"
-ENV LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
-ENV     LD_RUN_PATH="$PREFIX/lib:$LD_RUN_PATH"
-
-ENV PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PKG_CONFIG_LIBDIR"
-ENV PKG_CONFIG_PATH="$PREFIX/share/pkgconfig:$PKG_CONFIG_LIBDIR:$PKG_CONFIG_PATH"
+#ARG CPPFLAGS
+#ARG   CFLAGS
+#ARG CXXFLAGS
+#ARG  LDFLAGS
+#
+#ENV CHOST=x86_64-linux-gnu
+#ENV CC=$CHOST-gcc
+#ENV CXX=$CHOST-g++
+##ENV FC=$CHOST-gfortran
+#ENV NM=$CC-nm
+#ENV AR=$CC-ar
+#ENV RANLIB=$CC-ranlib
+#ENV STRIP=$CHOST-strip
+#ENV LD=$CHOST-ld
+#ENV AS=$CHOST-as
+#
+#ENV CPPFLAGS="$CPPFLAGS"
+#ENV   CFLAGS="$CFLAGS"
+#ENV CXXFLAGS="$CXXFLAGS"
+#ENV  LDFLAGS="$LDFLAGS"
+#
+#ENV PREFIX=/usr/local
+#ENV CPPFLAGS="-I$PREFIX/include $CPPFLAGS"
+#ENV CPATH="$PREFIX/incude:$CPATH"
+#ENV    C_INCLUDE_PATH="$PREFIX/include:$C_INCLUDE_PATH"
+#ENV OBJC_INCLUDE_PATH="$PREFIX/include:$OBJC_INCLUDE_PATH"
+#
+#ENV LDFLAGS="-L$PREFIX/lib $LDFLAGS"
+#ENV    LIBRARY_PATH="$PREFIX/lib:$LIBRARY_PATH"
+#ENV LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
+#ENV     LD_RUN_PATH="$PREFIX/lib:$LD_RUN_PATH"
+#
+#ENV PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PKG_CONFIG_LIBDIR"
+#ENV PKG_CONFIG_PATH="$PREFIX/share/pkgconfig:$PKG_CONFIG_LIBDIR:$PKG_CONFIG_PATH"
 
 RUN sleep 91                                                              \
+ && xbps-install -Suy                                                     \
+ && xbps-install   -y libressl-devel                                      \
  && git clone --depth=1 --recursive -b 0.19                               \
                                     https://github.com/google/autofdo.git \
  && cd                                                        autofdo     \
@@ -40,7 +44,7 @@ RUN sleep 91                                                              \
  && autoheader                                                            \
  && autoconf                                                              \
  && automake --add-missing -c                                             \
- && ./configure --host=$CHOST --target=$CHOST                             \
+ && ./configure                                                           \
  && make -j1                                                              \
  && make install                                                          \
  && cd ..                                                                 \
