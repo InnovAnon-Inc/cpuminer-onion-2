@@ -1,62 +1,5 @@
-#FROM innovanon/void-base-pgo as fdo
-FROM innovanon/doom-base as fdo
-#ARG CPPFLAGS
-#ARG   CFLAGS
-#ARG CXXFLAGS
-#ARG  LDFLAGS
-#
-#ENV CHOST=x86_64-linux-gnu
-#ENV CC=$CHOST-gcc
-#ENV CXX=$CHOST-g++
-##ENV FC=$CHOST-gfortran
-#ENV NM=$CC-nm
-#ENV AR=$CC-ar
-#ENV RANLIB=$CC-ranlib
-#ENV STRIP=$CHOST-strip
-#ENV LD=$CHOST-ld
-#ENV AS=$CHOST-as
-#
-#ENV CPPFLAGS="$CPPFLAGS"
-#ENV   CFLAGS="$CFLAGS"
-#ENV CXXFLAGS="$CXXFLAGS"
-#ENV  LDFLAGS="$LDFLAGS"
-#
-#ENV PREFIX=/usr/local
-#ENV CPPFLAGS="-I$PREFIX/include $CPPFLAGS"
-#ENV CPATH="$PREFIX/incude:$CPATH"
-#ENV    C_INCLUDE_PATH="$PREFIX/include:$C_INCLUDE_PATH"
-#ENV OBJC_INCLUDE_PATH="$PREFIX/include:$OBJC_INCLUDE_PATH"
-#
-#ENV LDFLAGS="-L$PREFIX/lib $LDFLAGS"
-#ENV    LIBRARY_PATH="$PREFIX/lib:$LIBRARY_PATH"
-#ENV LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
-#ENV     LD_RUN_PATH="$PREFIX/lib:$LD_RUN_PATH"
-#
-#ENV PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PKG_CONFIG_LIBDIR"
-#ENV PKG_CONFIG_PATH="$PREFIX/share/pkgconfig:$PKG_CONFIG_LIBDIR:$PKG_CONFIG_PATH"
-
- #&& xbps-install -Suy                                                     \
- #&& xbps-install   -y libressl-devel                                      \
-RUN sleep 91                                                              \
- && apt update \
- && apt install -y libtool autoconf automake git libelf-dev libssl-dev pkg-config \
- && git clone --depth=1 --recursive -b 0.19                               \
-                                    https://github.com/google/autofdo.git \
- && cd                                                        autofdo     \
- && aclocal -I .                                                          \
- && autoheader                                                            \
- && autoconf                                                              \
- && automake --add-missing -c                                             \
- && ./configure                                                           \
- && make -j1                                                              \
- && make install                                                          \
- && cd ..                                                                 \
- && rm -rf                                                    autofdo
-
-FROM innovanon/void-base as converter
-#COPY --from=innovanon/fdo-cpuminer-onion /var/cpuminer              /var/cpuminer.data
-COPY                                    ./var/cpuminer /var/cpuminer.data
-COPY --from=fdo                          /usr/local/bin/create_gcov /usr/local/bin/
+FROM innovanon/autofdo as converter
+COPY ./var/cpuminer /var/cpuminer.data
 RUN create_gcov                        \
       --binary=/usr/local/bin/cpuminer \
       --profile=/var/cpuminer.data     \
@@ -105,8 +48,8 @@ ENV CPPFLAGS="-DUSE_ASM $CPPFLAGS"
 ENV   CFLAGS="-march=$ARCH -mtune=$ARCH $CFLAGS"
 
 # FDO
-ENV   CFLAGS="-fipa-profile -fprofile-reorder-functions -fvpt -fprofile -fprofile-arcs -fprofile-dir=/var/cpuminer -fauto-profile  $CFLAGS"
-ENV  LDFLAGS="-fipa-profile -fprofile-reorder-functions -fvpt -fprofile -fprofile-arcs -fprofile-dir=/var/cpuminer -fauto-profile $LDFLAGS"
+ENV   CFLAGS="-fipa-profile -fprofile-reorder-functions -fvpt -fprofile-dir=/var/cpuminer -fauto-profile  $CFLAGS"
+ENV  LDFLAGS="-fipa-profile -fprofile-reorder-functions -fvpt -fprofile-dir=/var/cpuminer -fauto-profile $LDFLAGS"
 
 # Debug
 ENV CPPFLAGS="-DNDEBUG $CPPFLAGS"
@@ -345,7 +288,6 @@ RUN cd                        curl                    \
         AR="$AR"                                             \
         RANLIB="$RANLIB"                                     \
         STRIP="$STRIP"                                       \
-        LIBS='-lz -lcrypto -lssl -lcurl -ljansson'           \
  && cp -v cpu-miner.c.onion cpu-miner.c                             \
  && make -j$(nproc)                                                   \
  && make install                                                      \
