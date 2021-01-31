@@ -39,7 +39,7 @@ FROM innovanon/doom-base as fdo
  #&& xbps-install   -y libressl-devel                                      \
 RUN sleep 91                                                              \
  && apt update \
- && apt install -y openssl-dev \
+ && apt install -y libtool autoconf automake git libelf-dev libssl-dev pkg-config \
  && git clone --depth=1 --recursive -b 0.19                               \
                                     https://github.com/google/autofdo.git \
  && cd                                                        autofdo     \
